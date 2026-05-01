@@ -58,9 +58,18 @@ const getAccessToken = async () => {
 
 const buildUpstreamUrl = (event) => {
   console.log("[cdse_sh] buildUpstreamUrl event:", JSON.stringify({ path: event?.path, rawUrl: event?.rawUrl, rawQueryString: event?.rawQueryString, httpMethod: event?.httpMethod }));
-  const prefix = "/.netlify/functions/cdse_sh";
+  const netlifyPrefix = "/.netlify/functions/cdse_sh";
+  const appPrefix = "/__cdse_sh";
   const eventPath = event?.path ?? "/";
-  const rawPath = eventPath.startsWith(prefix) ? eventPath.slice(prefix.length) : eventPath;
+
+  let rawPath = eventPath;
+  if (rawPath.startsWith(netlifyPrefix)) {
+    rawPath = rawPath.slice(netlifyPrefix.length);
+  }
+  if (rawPath.startsWith(appPrefix)) {
+    rawPath = rawPath.slice(appPrefix.length);
+  }
+
   const upstreamPath = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
   const query = event?.rawQueryString ? `?${event.rawQueryString}` : "";
 
