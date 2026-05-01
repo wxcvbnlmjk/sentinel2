@@ -396,7 +396,7 @@ function App() {
                   </Typography>
                 </div>
               ) : null}
-              <div className="flex items-start gap-2">
+              <div className="flex items-stretch gap-2">
                 <TextField
                   select
                   label="dates disponibles"
@@ -421,11 +421,13 @@ function App() {
                 {isMobile ? (
                   <Button
                     size="small"
-                    variant="outlined"
+                    variant="contained"
                     disabled={!zoneDefined || !bbox || datesLoading}
                     onClick={() => setDatesFetchKey((k) => k + 1)}
+                    startIcon={datesLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
+                    sx={{ height: 40, whiteSpace: "nowrap" }}
                   >
-                    Charger
+                    {datesLoading ? "Chargement..." : "Charger"}
                   </Button>
                 ) : null}
               </div>
