@@ -547,8 +547,8 @@ function App() {
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
           <MapContainer center={mapCenter} zoom={10} style={{ height: "50vh", width: "100%" }}>
             <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution="&copy; OpenStreetMap contributors"
+              url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
+              attribution='&copy; OpenStreetMap contributors, tiles by OSM France'
             />
             <DrawBboxSelector
               onBboxSelected={(nextBbox) => {
