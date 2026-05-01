@@ -1,6 +1,6 @@
 let tokenCache = null;
 
-function readCredentials() {
+const readCredentials = () => {
   const clientId = process.env.CDSE_CLIENT_ID;
   const clientSecret = process.env.CDSE_CLIENT_SECRET;
 
@@ -11,7 +11,7 @@ function readCredentials() {
   return { clientId, clientSecret };
 }
 
-async function fetchAccessToken() {
+const fetchAccessToken = async () => {
   const { clientId, clientSecret } = readCredentials();
 
   const body = new URLSearchParams({
@@ -50,7 +50,7 @@ async function fetchAccessToken() {
   return { accessToken, expiresIn };
 }
 
-exports.handler = async function handler(event) {
+export const handler = async (event) => {
   try {
     if (event.httpMethod === "OPTIONS") {
       return {

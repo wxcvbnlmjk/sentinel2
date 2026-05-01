@@ -1,6 +1,6 @@
 let tokenCache = null;
 
-function readCredentials() {
+const readCredentials = () => {
   const clientId = process.env.CDSE_CLIENT_ID;
   const clientSecret = process.env.CDSE_CLIENT_SECRET;
 
@@ -11,7 +11,7 @@ function readCredentials() {
   return { clientId, clientSecret };
 }
 
-async function getAccessToken() {
+const getAccessToken = async () => {
   const now = Date.now();
   if (tokenCache && now < tokenCache.expiresAtMs - 30_000) {
     return tokenCache.accessToken;
@@ -54,7 +54,7 @@ async function getAccessToken() {
   return accessToken;
 }
 
-function buildUpstreamUrl(event) {
+const buildUpstreamUrl = (event) => {
   const prefix = "/.netlify/functions/cdse_sh";
   const rawPath = event.path.startsWith(prefix) ? event.path.slice(prefix.length) : event.path;
   const upstreamPath = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
@@ -63,7 +63,7 @@ function buildUpstreamUrl(event) {
   return `https://sh.dataspace.copernicus.eu${upstreamPath}${query}`;
 }
 
-function copyRequestHeaders(event) {
+const copyRequestHeaders = (event) => {
   const headers = {};
   for (const [key, value] of Object.entries(event.headers ?? {})) {
     if (!value) continue;
@@ -82,7 +82,7 @@ function copyRequestHeaders(event) {
   return headers;
 }
 
-exports.handler = async function handler(event) {
+export const handler = async (event) => {
   try {
     if (event.httpMethod === "OPTIONS") {
       return {
