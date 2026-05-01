@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import { ImageOverlay, MapContainer, Rectangle, TileLayer, useMapEvents } from "react-leaflet";
@@ -17,6 +17,7 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
   const [dragStart, setDragStart] = useState<LatLng | null>(null);
   const [dragCurrent, setDragCurrent] = useState<LatLng | null>(null);
   const [selectedBounds, setSelectedBounds] = useState<LatLngBoundsExpression | null>(null);
+  const selectedBoundsBackupRef = useRef<LatLngBoundsExpression | null>(null);
   const map = useMapEvents({
     mousedown(event) {
       if (event.originalEvent.button !== 2) return;
@@ -83,6 +84,7 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
       event.preventDefault();
       const latlng = touchToLatLng(event.touches[0]!);
       map.dragging.disable();
+      selectedBoundsBackupRef.current = selectedBounds;
       setSelectedBounds(null);
       onSelectingChange(true);
       setDragStart(latlng);
@@ -90,7 +92,19 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
     };
 
     const handleTouchMove = (event: TouchEvent) => {
-      if (event.touches.length !== 1 || !dragStart) return;
+      if (event.touches.length !== 1) {
+        if (dragStart) {
+          map.dragging.enable();
+          onSelectingChange(false);
+          setDragStart(null);
+          setDragCurrent(null);
+          if (selectedBoundsBackupRef.current) {
+            setSelectedBounds(selectedBoundsBackupRef.current);
+          }
+        }
+        return;
+      }
+      if (!dragStart) return;
       event.preventDefault();
       setDragCurrent(touchToLatLng(event.touches[0]!));
     };
@@ -98,12 +112,25 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
     const handleTouchEnd = (event: TouchEvent) => {
       if (!dragStart) return;
       event.preventDefault();
+      if (event.touches.length !== 0) {
+        map.dragging.enable();
+        onSelectingChange(false);
+        setDragStart(null);
+        setDragCurrent(null);
+        if (selectedBoundsBackupRef.current) {
+          setSelectedBounds(selectedBoundsBackupRef.current);
+        }
+        return;
+      }
       const touch = event.changedTouches[0];
       if (!touch) {
         map.dragging.enable();
         onSelectingChange(false);
         setDragStart(null);
         setDragCurrent(null);
+        if (selectedBoundsBackupRef.current) {
+          setSelectedBounds(selectedBoundsBackupRef.current);
+        }
         return;
       }
       finalizeSelection(touchToLatLng(touch));
@@ -114,6 +141,9 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
       onSelectingChange(false);
       setDragStart(null);
       setDragCurrent(null);
+      if (selectedBoundsBackupRef.current) {
+        setSelectedBounds(selectedBoundsBackupRef.current);
+      }
     };
 
     container.addEventListener("touchstart", handleTouchStart, { passive: false });
@@ -127,7 +157,7 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
       container.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("touchcancel", handleTouchCancel);
     };
-  }, [dragStart, map, onSelectingChange]);
+  }, [dragStart, map, onSelectingChange, selectedBounds]);
 
   const previewBounds: LatLngBoundsExpression | null = dragStart && dragCurrent
     ? [
