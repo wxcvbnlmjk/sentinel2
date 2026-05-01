@@ -169,10 +169,10 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
   return (
     <>
       {selectedBounds ? (
-        <Rectangle bounds={selectedBounds} pathOptions={{ color: "#1976d2", weight: 2, dashArray: "6 6" }} />
+        <Rectangle bounds={selectedBounds} pathOptions={{ color: "#1976d2", weight: 2, dashArray: "6 6", fill: false }} />
       ) : null}
       {previewBounds ? (
-        <Rectangle bounds={previewBounds} pathOptions={{ color: "#1976d2", weight: 2 }} />
+        <Rectangle bounds={previewBounds} pathOptions={{ color: "#1976d2", weight: 2, fill: false }} />
       ) : null}
     </>
   );
