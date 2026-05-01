@@ -1,3 +1,5 @@
+console.log("[cdse_sh] module loading start");
+
 let tokenCache = null;
 
 const readCredentials = () => {
@@ -55,10 +57,12 @@ const getAccessToken = async () => {
 }
 
 const buildUpstreamUrl = (event) => {
+  console.log("[cdse_sh] buildUpstreamUrl event:", JSON.stringify({ path: event?.path, rawUrl: event?.rawUrl, rawQueryString: event?.rawQueryString, httpMethod: event?.httpMethod }));
   const prefix = "/.netlify/functions/cdse_sh";
-  const rawPath = event.path.startsWith(prefix) ? event.path.slice(prefix.length) : event.path;
+  const eventPath = event?.path ?? "/";
+  const rawPath = eventPath.startsWith(prefix) ? eventPath.slice(prefix.length) : eventPath;
   const upstreamPath = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
-  const query = event.rawQueryString ? `?${event.rawQueryString}` : "";
+  const query = event?.rawQueryString ? `?${event.rawQueryString}` : "";
 
   return `https://sh.dataspace.copernicus.eu${upstreamPath}${query}`;
 }
@@ -83,6 +87,7 @@ const copyRequestHeaders = (event) => {
 }
 
 export const handler = async (event) => {
+  console.log("[cdse_sh] handler invoked, event keys:", Object.keys(event ?? {}).join(","));
   try {
     if (event.httpMethod === "OPTIONS") {
       return {
