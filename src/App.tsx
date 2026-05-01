@@ -195,7 +195,6 @@ function App() {
     }
 
     if (isMobile && (!zoneDefined || datesFetchKey === 0)) {
-      setAvailableDates([]);
       return;
     }
 
@@ -423,7 +422,11 @@ function App() {
                     size="small"
                     variant="contained"
                     disabled={!zoneDefined || !bbox || datesLoading}
-                    onClick={() => setDatesFetchKey((k) => k + 1)}
+                    onClick={() => {
+                      setAvailableDates([]);
+                      setSelectedRecentDate("");
+                      setDatesFetchKey((k) => k + 1);
+                    }}
                     startIcon={datesLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
                     sx={{ height: 40, whiteSpace: "nowrap" }}
                   >
@@ -505,8 +508,6 @@ function App() {
                 setZoneDefined(true);
                 if (isMobile) {
                   setDatesFetchKey(0);
-                  setSelectedRecentDate("");
-                  setAvailableDates([]);
                 }
               }}
               onSelectingChange={setIsSelectingZone}
