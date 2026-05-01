@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { Box, Button, Card, CardContent, Collapse, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import { ImageOverlay, MapContainer, Rectangle, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLng, LatLngBoundsExpression } from "leaflet";
 import { getAvailableDates, getSatelliteImage } from "./api/sentinelHub";
@@ -368,6 +368,14 @@ function App() {
                   {dateRangeOpen ? "Masquer" : "Afficher"}
                 </Button>
               </div>
+              {datesLoading ? (
+                <div className="flex items-center gap-2">
+                  <CircularProgress size={16} />
+                  <Typography variant="body2" color="text.secondary">
+                    Recherche des dates...
+                  </Typography>
+                </div>
+              ) : null}
               <TextField
                 select
                 label="dates disponibles"
@@ -381,7 +389,7 @@ function App() {
                 size="small"
                 fullWidth
                 // sx={compactMobileFieldListSx}
-                disabled={latestFiveDates.length === 0}
+                disabled={datesLoading || latestFiveDates.length === 0}
               >
                 {latestFiveDates.map((date) => (
                   <MenuItem key={date} value={date}>
@@ -428,7 +436,12 @@ function App() {
               </Collapse>
 
 
-              <Button variant="contained" onClick={loadImage} disabled={loading}>
+              <Button
+                variant="contained"
+                onClick={loadImage}
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined}
+              >
                 {loading ? "Chargement..." : "Charger image Sentinel-2"}
               </Button>
               {imageDatetime ? (
