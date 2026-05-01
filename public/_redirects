@@ -1,0 +1,4 @@
+/__cdse_token  /.netlify/functions/cdse_token  200!
+/__cdse_sh/*   /.netlify/functions/cdse_sh/:splat  200!
+
+/*             /index.html                                                                           200

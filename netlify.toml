@@ -1,0 +1,21 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/__cdse_token"
+  to = "/.netlify/functions/cdse_token"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/__cdse_sh/*"
+  to = "/.netlify/functions/cdse_sh/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
