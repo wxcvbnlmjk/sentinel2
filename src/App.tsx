@@ -138,6 +138,7 @@ function App() {
   const { mode, toggleMode } = useContext(ThemeModeContext);
   const isMobile = useMediaQuery("(max-width:600px)");
   const [zoneDefined, setZoneDefined] = useState(false);
+  const [datesFetchKey, setDatesFetchKey] = useState(0);
   const [helpOpen, setHelpOpen] = useState(false);
   const [dateRangeOpen, setDateRangeOpen] = useState(false);
   const [bboxText, setBboxText] = useState("1.3,43.5,1.6,43.7");
@@ -183,12 +184,17 @@ function App() {
   }, [isMobile]);
 
   useEffect(() => {
+    if (!isMobile) return;
+    setDatesFetchKey(0);
+  }, [bbox, isMobile]);
+
+  useEffect(() => {
     if (!bbox) {
       setAvailableDates([]);
       return;
     }
 
-    if (isMobile && !zoneDefined) {
+    if (isMobile && (!zoneDefined || datesFetchKey === 0)) {
       setAvailableDates([]);
       return;
     }
@@ -206,7 +212,7 @@ function App() {
     };
 
     void fetchAvailableDates();
-  }, [bbox, isMobile, zoneDefined]);
+  }, [bbox, isMobile, zoneDefined, datesFetchKey]);
 
   useEffect(() => {
     if (availableDates.length === 0) return;
@@ -390,27 +396,39 @@ function App() {
                   </Typography>
                 </div>
               ) : null}
-              <TextField
-                select
-                label="dates disponibles"
-                value={selectedRecentDate}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  setSelectedRecentDate(value);
-                  setFromDate(value);
-                  setToDate(value);
-                }}
-                size="small"
-                fullWidth
-                // sx={compactMobileFieldListSx}
-                disabled={datesLoading || latestFiveDates.length === 0}
-              >
-                {latestFiveDates.map((date) => (
-                  <MenuItem key={date} value={date}>
-                    {date}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <div className="flex items-start gap-2">
+                <TextField
+                  select
+                  label="dates disponibles"
+                  value={selectedRecentDate}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setSelectedRecentDate(value);
+                    setFromDate(value);
+                    setToDate(value);
+                  }}
+                  size="small"
+                  fullWidth
+                  // sx={compactMobileFieldListSx}
+                  disabled={datesLoading || latestFiveDates.length === 0}
+                >
+                  {latestFiveDates.map((date) => (
+                    <MenuItem key={date} value={date}>
+                      {date}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                {isMobile ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={!zoneDefined || !bbox || datesLoading}
+                    onClick={() => setDatesFetchKey((k) => k + 1)}
+                  >
+                    Charger
+                  </Button>
+                ) : null}
+              </div>
 
               <Collapse in={dateRangeOpen} unmountOnExit>
                 <div className="grid grid-cols-2 gap-2 !mt-2">
@@ -483,6 +501,11 @@ function App() {
               onBboxSelected={(nextBbox) => {
                 setBboxText(formatBboxText(nextBbox));
                 setZoneDefined(true);
+                if (isMobile) {
+                  setDatesFetchKey(0);
+                  setSelectedRecentDate("");
+                  setAvailableDates([]);
+                }
               }}
               onSelectingChange={setIsSelectingZone}
             />
