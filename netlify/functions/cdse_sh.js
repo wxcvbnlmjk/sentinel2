@@ -89,6 +89,18 @@ const copyRequestHeaders = (event) => {
 export const handler = async (event) => {
   console.log("[cdse_sh] handler invoked, event keys:", Object.keys(event ?? {}).join(","));
   try {
+    if (event?.path === "/.netlify/functions/cdse_sh" && event?.httpMethod === "GET") {
+      return {
+        statusCode: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ ok: true }),
+      };
+    }
+
     if (event.httpMethod === "OPTIONS") {
       return {
         statusCode: 200,
@@ -119,6 +131,7 @@ export const handler = async (event) => {
     });
 
     const contentType = upstreamResponse.headers.get("content-type") ?? "application/octet-stream";
+    console.log("[cdse_sh] upstream:", JSON.stringify({ url: upstreamUrl, status: upstreamResponse.status, contentType }));
 
     if (contentType.includes("application/json") || contentType.includes("text/")) {
       const text = await upstreamResponse.text();
@@ -147,6 +160,11 @@ export const handler = async (event) => {
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    if (err instanceof Error && err.stack) {
+      console.error("[cdse_sh] error stack:", err.stack);
+    } else {
+      console.error("[cdse_sh] error:", err);
+    }
     return {
       statusCode: 500,
       headers: {
