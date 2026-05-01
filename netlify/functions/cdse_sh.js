@@ -100,6 +100,8 @@ const copyRequestHeaders = (event) => {
   const path = event?.path ?? "";
   if (path.includes("/process/v1")) {
     headers.Accept = "image/png";
+  } else if (path.includes("/catalog/")) {
+    headers.Accept = "application/geo+json,application/json;q=0.9";
   } else {
     headers.Accept = "application/json";
   }
