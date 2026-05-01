@@ -86,12 +86,24 @@ const copyRequestHeaders = (event) => {
     if (k === "connection") continue;
     if (k === "content-length") continue;
     if (k === "accept-encoding") continue;
+    if (k === "accept") continue;
     if (k === "x-forwarded-for") continue;
     if (k === "x-forwarded-proto") continue;
     if (k === "x-forwarded-host") continue;
+    if (k.startsWith("sec-fetch-")) continue;
+    if (k === "origin") continue;
+    if (k === "referer") continue;
 
     headers[key] = value;
   }
+
+  const path = event?.path ?? "";
+  if (path.includes("/process/v1")) {
+    headers.Accept = "image/png";
+  } else {
+    headers.Accept = "application/json";
+  }
+
   return headers;
 }
 
