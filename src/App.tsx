@@ -16,11 +16,13 @@ type DrawSelectorProps = {
 function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorProps) {
   const [dragStart, setDragStart] = useState<LatLng | null>(null);
   const [dragCurrent, setDragCurrent] = useState<LatLng | null>(null);
+  const [selectedBounds, setSelectedBounds] = useState<LatLngBoundsExpression | null>(null);
   const map = useMapEvents({
     mousedown(event) {
       if (event.originalEvent.button !== 2) return;
       event.originalEvent.preventDefault();
       map.dragging.disable();
+      setSelectedBounds(null);
       onSelectingChange(true);
       setDragStart(event.latlng);
       setDragCurrent(event.latlng);
@@ -53,6 +55,12 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
     const maxLon = Math.max(dragStart.lng, end.lng);
     const maxLat = Math.max(dragStart.lat, end.lat);
     onBboxSelected([minLon, minLat, maxLon, maxLat]);
+
+    setSelectedBounds([
+      [minLat, minLon],
+      [maxLat, maxLon],
+    ]);
+
     map.dragging.enable();
     onSelectingChange(false);
     setDragStart(null);
@@ -75,6 +83,7 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
       event.preventDefault();
       const latlng = touchToLatLng(event.touches[0]!);
       map.dragging.disable();
+      setSelectedBounds(null);
       onSelectingChange(true);
       setDragStart(latlng);
       setDragCurrent(latlng);
@@ -120,14 +129,23 @@ function DrawBboxSelector({ onBboxSelected, onSelectingChange }: DrawSelectorPro
     };
   }, [dragStart, map, onSelectingChange]);
 
-  if (!dragStart || !dragCurrent) return null;
+  const previewBounds: LatLngBoundsExpression | null = dragStart && dragCurrent
+    ? [
+        [Math.min(dragStart.lat, dragCurrent.lat), Math.min(dragStart.lng, dragCurrent.lng)],
+        [Math.max(dragStart.lat, dragCurrent.lat), Math.max(dragStart.lng, dragCurrent.lng)],
+      ]
+    : null;
 
-  const previewBounds: LatLngBoundsExpression = [
-    [Math.min(dragStart.lat, dragCurrent.lat), Math.min(dragStart.lng, dragCurrent.lng)],
-    [Math.max(dragStart.lat, dragCurrent.lat), Math.max(dragStart.lng, dragCurrent.lng)],
-  ];
-
-  return <Rectangle bounds={previewBounds} pathOptions={{ color: "#1976d2", weight: 2 }} />;
+  return (
+    <>
+      {selectedBounds ? (
+        <Rectangle bounds={selectedBounds} pathOptions={{ color: "#1976d2", weight: 2, dashArray: "6 6" }} />
+      ) : null}
+      {previewBounds ? (
+        <Rectangle bounds={previewBounds} pathOptions={{ color: "#1976d2", weight: 2 }} />
+      ) : null}
+    </>
+  );
 }
 
 function formatBboxText(nextBbox: Bbox): string {
