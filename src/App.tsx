@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import { ImageOverlay, MapContainer, Rectangle, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLng, LatLngBoundsExpression } from "leaflet";
 import { getAvailableDates, getSatelliteImage } from "./api/sentinelHub";
@@ -135,6 +136,8 @@ function formatBboxText(nextBbox: Bbox): string {
 
 function App() {
   const { mode, toggleMode } = useContext(ThemeModeContext);
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const [zoneDefined, setZoneDefined] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [dateRangeOpen, setDateRangeOpen] = useState(false);
   const [bboxText, setBboxText] = useState("1.3,43.5,1.6,43.7");
@@ -174,7 +177,18 @@ function App() {
   );
 
   useEffect(() => {
+    if (!isMobile) {
+      setZoneDefined(true);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
     if (!bbox) {
+      setAvailableDates([]);
+      return;
+    }
+
+    if (isMobile && !zoneDefined) {
       setAvailableDates([]);
       return;
     }
@@ -192,7 +206,7 @@ function App() {
     };
 
     void fetchAvailableDates();
-  }, [bbox]);
+  }, [bbox, isMobile, zoneDefined]);
 
   useEffect(() => {
     if (availableDates.length === 0) return;
@@ -466,7 +480,10 @@ function App() {
               attribution="&copy; OpenStreetMap contributors"
             />
             <DrawBboxSelector
-              onBboxSelected={(nextBbox) => setBboxText(formatBboxText(nextBbox))}
+              onBboxSelected={(nextBbox) => {
+                setBboxText(formatBboxText(nextBbox));
+                setZoneDefined(true);
+              }}
               onSelectingChange={setIsSelectingZone}
             />
             {imageUrl && imageBounds && !isSelectingZone ? (
