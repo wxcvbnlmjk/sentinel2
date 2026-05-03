@@ -544,13 +544,12 @@ function App() {
                     size="small"
                   />
                 {/* </div> */}
+                {imageDatetime ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Date/heure image affichee: {new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })} UTC
+                  </Typography>
+                ) : null}
               </div>
-
-              {imageDatetime ? (
-                <Typography variant="body2" color="text.secondary">
-                  Date/heure image affichee: {new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })} UTC
-                </Typography>
-              ) : null}
 
               {error ? (
                 <Typography variant="body2" color="error">
@@ -565,7 +564,7 @@ function App() {
           className="absolute bottom-4 left-4 right-4 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
           style={{ "--satellite-brightness": brightness } as React.CSSProperties}
         >
-          <MapContainer center={mapCenter} zoom={10} style={{ height: "50vh", width: "100%" }}>
+          <MapContainer center={mapCenter} zoom={10} style={{ height: "45vh", width: "100%" }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
               attribution='&copy; OpenStreetMap contributors, tiles by OSM France'
