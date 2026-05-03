@@ -479,7 +479,7 @@ function App() {
                     startIcon={datesLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
                     sx={{ height: 40, whiteSpace: "nowrap" }}
                   >
-                    {/* {datesLoading ? "Chargement..." : "Charger"} */}
+                    {datesLoading ? "..." : "Charger"}
                   </Button>
                 ) : null}
               </div>
