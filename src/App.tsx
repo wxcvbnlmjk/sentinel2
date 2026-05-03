@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton, MenuItem, Slider, Stack, TextField, Typography } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import { ImageOverlay, MapContainer, Rectangle, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLng, LatLngBoundsExpression } from "leaflet";
@@ -199,6 +199,7 @@ function App() {
   const [imageDatetime, setImageDatetime] = useState<string | null>(null);
   const [imageBounds, setImageBounds] = useState<LatLngBoundsExpression | null>(null);
   const [isSelectingZone, setIsSelectingZone] = useState(false);
+  const [brightness, setBrightness] = useState(4);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -529,6 +530,23 @@ function App() {
               >
                 {loading ? "Chargement..." : "Charger image Sentinel-2"}
               </Button>
+
+              <div className="pointer-events-none absolute bottom-8 left-2 right-2 z-[1000]">
+                <div className="pointer-events-auto rounded-lg border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
+                  {/* <Typography variant="caption" color="text.secondary">
+                    Luminosite
+                  </Typography> */}
+                  <Slider
+                    value={brightness}
+                    onChange={(_, value) => setBrightness(Array.isArray(value) ? value[0]! : value)}
+                    min={2.0}
+                    max={6.0}
+                    step={0.05}
+                    size="small"
+                  />
+                </div>
+              </div>
+
               {imageDatetime ? (
                 <Typography variant="body2" color="text.secondary">
                   Date/heure image affichee: {new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })} UTC
@@ -544,7 +562,10 @@ function App() {
           </CardContent>
         </Card>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+        <div 
+          className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
+          style={{ "--satellite-brightness": brightness } as React.CSSProperties}
+        >
           <MapContainer center={mapCenter} zoom={10} style={{ height: "50vh", width: "100%" }}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"

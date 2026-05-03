@@ -9,3 +9,7 @@ body,
   height: 100%;
   margin: 0;
 }
+
+.satellite-image-overlay {
+  filter: brightness(var(--satellite-brightness, 1));
+}
