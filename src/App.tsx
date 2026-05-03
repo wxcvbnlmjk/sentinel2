@@ -582,7 +582,7 @@ function App() {
               onSelectingChange={setIsSelectingZone}
             />
             {imageUrl && imageBounds && !isSelectingZone ? (
-              <ImageOverlay url={imageUrl} bounds={imageBounds} opacity={0.9} />
+              <ImageOverlay url={imageUrl} bounds={imageBounds} opacity={0.9} className="satellite-image-overlay" />
             ) : null}
           </MapContainer>
         </div>
