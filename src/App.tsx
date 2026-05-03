@@ -479,7 +479,7 @@ function App() {
                     startIcon={datesLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
                     sx={{ height: 40, whiteSpace: "nowrap" }}
                   >
-                    {datesLoading ? "Chargement..." : "Charger"}
+                    {/* {datesLoading ? "Chargement..." : "Charger"} */}
                   </Button>
                 ) : null}
               </div>
@@ -521,7 +521,6 @@ function App() {
                 </div>
               </Collapse>
 
-
               <Button
                 variant="contained"
                 onClick={loadImage}
@@ -531,8 +530,8 @@ function App() {
                 {loading ? "Chargement..." : "Charger image Sentinel-2"}
               </Button>
 
-              <div className="pointer-events-none absolute bottom-8 left-2 right-2 z-[1000]">
-                <div className="pointer-events-auto rounded-lg border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
+              <div className="left-2 right-2 z-[1000]">
+                {/* <div className="pointer-events-auto rounded-lg border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/80"> */}
                   {/* <Typography variant="caption" color="text.secondary">
                     Luminosite
                   </Typography> */}
@@ -544,7 +543,7 @@ function App() {
                     step={0.05}
                     size="small"
                   />
-                </div>
+                {/* </div> */}
               </div>
 
               {imageDatetime ? (
@@ -563,7 +562,7 @@ function App() {
         </Card>
 
         <div 
-          className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
+          className="absolute bottom-4 left-4 right-4 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
           style={{ "--satellite-brightness": brightness } as React.CSSProperties}
         >
           <MapContainer center={mapCenter} zoom={10} style={{ height: "50vh", width: "100%" }}>
