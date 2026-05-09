@@ -2,7 +2,9 @@ export type Bbox = [number, number, number, number];
 
 const CATALOG_SEARCH_URL = "/__cdse_sh/catalog/v1/search";
 const PROCESS_URL = "/__cdse_sh/process/v1";
-const COLLECTION = "sentinel-2-l2a";
+export type CollectionId = "sentinel-2-l1c" | "sentinel-2-l2a";
+
+export const DEFAULT_COLLECTION: CollectionId = "sentinel-2-l1c";
 
 async function catalogSearch(
   body: Record<string, unknown>,
@@ -23,10 +25,13 @@ async function catalogSearch(
   return payload.features ?? [];
 }
 
-export async function getAvailableDates(bbox: Bbox): Promise<string[]> {
+export async function getAvailableDates(
+  bbox: Bbox,
+  collection: CollectionId = DEFAULT_COLLECTION,
+): Promise<string[]> {
   const features = await catalogSearch({
     bbox,
-    collections: [COLLECTION],
+    collections: [collection],
     datetime: "2015-01-01T00:00:00Z/2100-01-01T00:00:00Z",
     limit: 100,
   });
@@ -44,16 +49,17 @@ export async function getSatelliteImage(args: {
   bbox: Bbox;
   fromDate: string;
   toDate: string;
+  collection?: CollectionId;
   width?: number;
   height?: number;
 }): Promise<{ blob: Blob; acquisitionDatetime: string | null }> {
-  const { bbox, fromDate, toDate, width = 900, height = 900 } = args;
+  const { bbox, fromDate, toDate, collection = DEFAULT_COLLECTION, width = 900, height = 900 } = args;
   const from = `${fromDate}T00:00:00Z`;
   const to = `${toDate}T23:59:59Z`;
 
   const features = await catalogSearch({
     bbox,
-    collections: [COLLECTION],
+    collections: [collection],
     datetime: `${from}/${to}`,
     limit: 1,
   });
@@ -67,7 +73,7 @@ export async function getSatelliteImage(args: {
       },
       data: [
         {
-          type: COLLECTION,
+          type: collection,
           dataFilter: {
             timeRange: { from, to },
             mosaickingOrder: "leastCC",

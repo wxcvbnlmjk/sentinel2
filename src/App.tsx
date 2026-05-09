@@ -3,7 +3,8 @@ import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton,
 import { useMediaQuery } from "@mui/material";
 import { ImageOverlay, MapContainer, Rectangle, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLng, LatLngBoundsExpression } from "leaflet";
-import { getAvailableDates, getSatelliteImage } from "./api/sentinelHub";
+import { DEFAULT_COLLECTION, getAvailableDates, getSatelliteImage } from "./api/sentinelHub";
+import type { CollectionId } from "./api/sentinelHub";
 import { ThemeModeContext } from "./main";
 
 type Bbox = [number, number, number, number];
@@ -187,6 +188,7 @@ function App() {
   const isMobile = useMediaQuery("(max-width:600px)");
   const [zoneDefined, setZoneDefined] = useState(false);
   const [datesFetchKey, setDatesFetchKey] = useState(0);
+  const [collection, setCollection] = useState<CollectionId>(DEFAULT_COLLECTION);
   const [helpOpen, setHelpOpen] = useState(false);
   const [dateRangeOpen, setDateRangeOpen] = useState(false);
   const [bboxText, setBboxText] = useState("1.3,43.5,1.6,43.7");
@@ -235,7 +237,7 @@ function App() {
   useEffect(() => {
     if (!isMobile) return;
     setDatesFetchKey(0);
-  }, [bbox, isMobile]);
+  }, [bbox, isMobile, collection]);
 
   useEffect(() => {
     if (!bbox) {
@@ -250,7 +252,7 @@ function App() {
     const fetchAvailableDates = async () => {
       setDatesLoading(true);
       try {
-        const dates = await getAvailableDates(bbox);
+        const dates = await getAvailableDates(bbox, collection);
         setAvailableDates(dates);
       } catch {
         setAvailableDates([]);
@@ -260,7 +262,7 @@ function App() {
     };
 
     void fetchAvailableDates();
-  }, [bbox, isMobile, zoneDefined, datesFetchKey]);
+  }, [bbox, isMobile, zoneDefined, datesFetchKey, collection]);
 
   useEffect(() => {
     if (availableDates.length === 0) return;
@@ -306,6 +308,7 @@ function App() {
         bbox,
         fromDate,
         toDate,
+        collection,
         width: 900,
         height: 900,
       });
@@ -364,9 +367,30 @@ function App() {
   return (
     <Box className="min-h-screen bg-slate-50 p-4 md:p-6 dark:bg-slate-950">
       <div className="relative flex w-full items-center justify-end !mb-1">
-        <Typography variant="h6" className="!font-semibold absolute -translate-x-1/2">
-          Sentinel-2 Copernicus
-        </Typography>
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <TextField
+            select
+            size="small"
+            value={collection}
+            onChange={(event) => {
+              const next = event.target.value as CollectionId;
+              setCollection(next);
+              setError(null);
+              setSelectedRecentDate("");
+              setImageUrl((currentUrl) => {
+                if (currentUrl) URL.revokeObjectURL(currentUrl);
+                return null;
+              });
+              setImageDatetime(null);
+              setImageBounds(null);
+              setAvailableDates([]);
+              setDatesFetchKey(0);
+            }}
+          >
+            <MenuItem value="sentinel-2-l1c">Sentinel-2 L1C</MenuItem>
+            <MenuItem value="sentinel-2-l2a">Sentinel-2 L2A</MenuItem>
+          </TextField>
+        </div>
         <IconButton onClick={toggleMode} aria-label={mode === "light" ? "Mode sombre" : "Mode clair"}>
           {mode === "light" ? (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
