@@ -558,7 +558,7 @@ function App() {
                 {loading ? "Chargement..." 
                 : 
                 imageDatetime ?
-                "Image Sentinel-2" + new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })
+                "Image Sentinel-2 du " + new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })
                 :
                 "Charger image Sentinel-2"}
               </Button>
