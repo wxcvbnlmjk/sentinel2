@@ -555,7 +555,12 @@ function App() {
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined}
               >
-                {loading ? "Chargement..." : "Charger image Sentinel-2"}
+                {loading ? "Chargement..." 
+                : 
+                imageDatetime ?
+                "Image Sentinel-2" + new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })
+                :
+                "Charger image Sentinel-2"}
               </Button>
 
               <div 
@@ -590,11 +595,11 @@ function App() {
                     size="small"
                   />
                 {/* </div> */}
-                {imageDatetime ? (
+                {/* {imageDatetime ? (
                   <Typography variant="body2" color="text.primary">
                     {new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })}
                   </Typography>
-                ) : null}
+                ) : null} */}
               </div>
               
               {/* <div 
