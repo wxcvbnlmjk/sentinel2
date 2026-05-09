@@ -591,8 +591,8 @@ function App() {
                   />
                 {/* </div> */}
                 {imageDatetime ? (
-                  <Typography variant="body2" color="text.secondary">
-                    Date/heure image affichee: {new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })} UTC
+                  <Typography variant="body2" color="text.primary">
+                    {new Date(imageDatetime).toLocaleString("fr-FR", { timeZone: "UTC" })}
                   </Typography>
                 ) : null}
               </div>
