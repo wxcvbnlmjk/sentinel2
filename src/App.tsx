@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Card, CardContent, CircularProgress, Collapse, IconButton, MenuItem, Slider, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Link,CardContent, CircularProgress, Collapse, IconButton, MenuItem, Slider, Stack, TextField, Typography } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import { ImageOverlay, MapContainer, Rectangle, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLng, LatLngBoundsExpression } from "leaflet";
@@ -366,12 +366,16 @@ function App() {
 
   return (
     <Box className="min-h-screen bg-slate-50 p-4 md:p-6 dark:bg-slate-950">
-      <div className="relative flex w-full items-center justify-end !mb-1">
-        <div className="absolute left-1/2 -translate-x-1/2">
+      <Card className="!mb-2">
+        <CardContent className="!py-2">
+          <div className="flex w-full items-center gap-2">
           <TextField
             select
             size="small"
+            label="Données Copernicus disponibles"
             value={collection}
+            fullWidth
+            sx={{ flex: 1 }}
             onChange={(event) => {
               const next = event.target.value as CollectionId;
               setCollection(next);
@@ -390,8 +394,7 @@ function App() {
             <MenuItem value="sentinel-2-l1c">Sentinel-2 L1C</MenuItem>
             <MenuItem value="sentinel-2-l2a">Sentinel-2 L2A</MenuItem>
           </TextField>
-        </div>
-        <IconButton onClick={toggleMode} aria-label={mode === "light" ? "Mode sombre" : "Mode clair"}>
+            <IconButton onClick={toggleMode} aria-label={mode === "light" ? "Mode sombre" : "Mode clair"}>
           {mode === "light" ? (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -411,7 +414,8 @@ function App() {
           )}
         </IconButton>
       </div>
-
+        </CardContent>
+      </Card>
       <Card className="!mb-2">
         <CardContent className="!py-2">
           <div className="flex items-center justify-between gap-2">
@@ -554,7 +558,25 @@ function App() {
                 {loading ? "Chargement..." : "Charger image Sentinel-2"}
               </Button>
 
-              <div className="left-2 right-2 z-[1000]">
+              <div 
+                className="relative bottom-0 left-0 overflow-hidden flex items-stretch z-[1000] gap-4"
+              >
+                  <Link href="https://github.com/wxcvbnlmjk/sentinel2" target="_blank" rel="noreferrer">
+                    <img
+                      alt="github sentinel2"
+                      src="https://img.shields.io/badge/github-sentinel2-blue?logo=github"
+                    />
+                  </Link>
+
+                  <Link href="https://browser.dataspace.copernicus.eu" target="_blank" rel="noreferrer">
+                    <img
+                      alt="copernicus browser"
+                      src="https://img.shields.io/badge/copernicus-browser-blue?logo=earth"
+                    />
+                  </Link>
+              </div>
+
+              <div className="relative bottom-5 left-0 overflow-hidden flex items-stretch z-[1000] gap-4">
                 {/* <div className="pointer-events-auto rounded-lg border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/80"> */}
                   {/* <Typography variant="caption" color="text.secondary">
                     Luminosite
@@ -574,6 +596,25 @@ function App() {
                   </Typography>
                 ) : null}
               </div>
+              
+              {/* <div 
+                className="relative bottom-0 left-0 overflow-hidden flex items-stretch gap-4"
+                style={{ zIndex: 1000 }}
+              >
+                  <Link href="https://github.com/wxcvbnlmjk/sentinel2" target="_blank" rel="noreferrer">
+                    <img
+                      alt="github sentinel2"
+                      src="https://img.shields.io/badge/github-sentinel2-blue?logo=github"
+                    />
+                  </Link>
+
+                  <Link href="https://browser.dataspace.copernicus.eu" target="_blank" rel="noreferrer">
+                    <img
+                      alt="copernicus browser"
+                      src="https://img.shields.io/badge/copernicus-browser-blue?logo=earth"
+                    />
+                  </Link>
+              </div> */}
 
               {error ? (
                 <Typography variant="body2" color="error">
@@ -581,6 +622,9 @@ function App() {
                 </Typography>
               ) : null}
             </Stack>
+
+
+
           </CardContent>
         </Card>
 
@@ -608,6 +652,25 @@ function App() {
             ) : null}
           </MapContainer>
         </div>
+
+        {/* <div 
+          className="absolute bottom-4 left-4 right-4 overflow-hidden flex items-stretch gap-2"
+          style={{ zIndex: 1000 }}
+        >
+            <Link href="https://github.com/wxcvbnlmjk/sentinel2" target="_blank" rel="noreferrer">
+              <img
+                alt="github sentinel2"
+                src="https://img.shields.io/badge/github-sentinel2-blue?logo=github"
+              />
+            </Link>
+
+            <Link href="https://browser.dataspace.copernicus.eu" target="_blank" rel="noreferrer">
+              <img
+                alt="copernicus browser"
+                src="https://img.shields.io/badge/copernicus-browser-blue?logo=earth"
+              />
+            </Link>
+        </div> */}
       </div>
     </Box>
   );
